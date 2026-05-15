@@ -21,7 +21,7 @@ JavaScript (Vanilla JS)
 Google APIs
 Google Identity Services
 Chart.js
-# Design
+## Design
 
 - O layout foi desenvolvido com foco em:
 
@@ -30,7 +30,7 @@ Experiência do usuário
 Leitura rápida de informações
 Responsividade
 Identidade visual moderna
-# Integrações Google
+## Integrações Google
 
 - O projeto utiliza:
 
@@ -38,22 +38,23 @@ Gmail API
 Google Calendar API
 OAuth 2.0 Authentication
 
-# Para funcionamento completo, é necessário configurar:
+## Para funcionamento completo, é necessário configurar:
 
 Google Cloud Console
 Credenciais OAuth
 Client ID
 APIs habilitadas
 # Como executar o projeto
-Clone o repositório:
-ggit clone https://github.com/azevedomarienny-stack/dashboard-ia.git
-Abra o projeto no VS Code
-Execute utilizando uma extensão como:
-Live Server
+
+- Deploy:
+https://azevedomarienny-stack.github.io/meu-dashboard/
+
+- Repositório:
+https://github.com/azevedomarienny-stack/meu-dashboard
 
 OBS.:O login Google não funciona abrindo o arquivo diretamente pelo file://.
 
-# Objetivo do projeto
+## Objetivo do projeto
 
 Este projeto foi desenvolvido como prática de estudos em:
 
