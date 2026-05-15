@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Início do Dia</title>
+  <meta name="description" content="Dashboard pessoal de início de dia: emails, reuniões e tarefas pendentes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ── Reset & tokens ──────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f7f5f2;
+      --surface-2: #ece9e4;
+      --border: #00000010;
+      --accent: #b8913a;
+      /* bege escuro  */
+      --accent-2: #3e8c3e;
+      /* verde médio  */
+      --accent-3: #c4526b;
+      /* rosa médio   */
+      --text-1: #111111;
+      /* preto         */
+      --text-2: #333333;
+      /* cinza escuro  */
+      --text-3: #666666;
+      /* cinza médio  */
+      --radius: 16px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-1);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    /* ── Layout wrapper ──────────────────────────────── */
+    .wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* ── Top bar ─────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .topbar-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .topbar-badge {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      font-size: 0.78rem;
+      color: var(--text-2);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    /* ── Hero / cabeçalho ────────────────────────────── */
+    .hero {
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      margin-bottom: 0.9rem;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 2px;
+      background: var(--accent-2);
+      border-radius: 2px;
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 5.5vw, 3.2rem);
+      line-height: 1.15;
+      background: linear-gradient(130deg, #111111 30%, #444444 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      margin-top: 0.9rem;
+      font-size: 0.95rem;
+      color: var(--text-2);
+      font-weight: 400;
+      max-width: 480px;
+      line-height: 1.65;
+    }
+
+    /* ── Section label ───────────────────────────────── */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 1rem;
+    }
+
+    /* ── Cards grid ──────────────────────────────────── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.55);
+    }
+
+    /* ── Card: glow accent top border ───────────────── */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 1px;
+      border-radius: 1px;
+      transition: opacity 0.3s;
+    }
+
+    .card--email::after {
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .card--meetings::after {
+      background: linear-gradient(90deg, transparent, var(--accent-2), transparent);
+    }
+
+    .card--tasks::after {
+      background: linear-gradient(90deg, transparent, var(--accent-3), transparent);
+    }
+
+    /* ── Card icon ───────────────────────────────────── */
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .card--email .card-icon {
+      background: #e8d5b025;
+    }
+
+    .card--meetings .card-icon {
+      background: #b5ddb525;
+    }
+
+    .card--tasks .card-icon {
+      background: #f4b8c425;
+    }
+
+    /* ── Card body ───────────────────────────────────── */
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .card-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-2);
+      letter-spacing: 0.03em;
+    }
+
+    .card-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+    }
+
+    .card--email .card-badge {
+      background: #e8d5b025;
+      color: var(--accent);
+    }
+
+    .card--meetings .card-badge {
+      background: #b5ddb525;
+      color: var(--accent-2);
+    }
+
+    .card--tasks .card-badge {
+      background: #f4b8c425;
+      color: var(--accent-3);
+    }
+
+    .card-value {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(5rem, 11vw, 8rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .card--email .card-value {
+      color: var(--accent);
+    }
+
+    .card--meetings .card-value {
+      color: var(--accent-2);
+    }
+
+    .card--tasks .card-value {
+      color: var(--accent-3);
+    }
+
+    .card-desc {
+      font-size: 0.78rem;
+      color: var(--text-3);
+      line-height: 1.55;
+    }
+
+    /* ── Progress bar ────────────────────────────────── */
+    .card-progress {
+      margin-top: auto;
+    }
+
+    .progress-track {
+      height: 3px;
+      background: var(--surface-2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    .card--email .progress-fill {
+      background: var(--accent);
+      width: 72%;
+    }
+
+    .card--meetings .progress-fill {
+      background: var(--accent-2);
+      width: 33%;
+    }
+
+    .card--tasks .progress-fill {
+      background: var(--accent-3);
+      width: 55%;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: var(--text-3);
+      margin-top: 0.45rem;
+    }
+
+    /* ── Divider ─────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 2.5rem 0;
+    }
+
+    /* ── Quick links ─────────────────────────────────── */
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .link-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+      color: var(--text-2);
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: color 0.2s, border-color 0.2s, transform 0.2s;
+    }
+
+    .link-item:hover {
+      color: var(--text-1);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .link-item span {
+      font-size: 1.1rem;
+    }
+
+    /* ── Footer ──────────────────────────────────────── */
+    .footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-3);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Charts grid ────────────────────────────────── */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .chart-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--text-1);
+    }
+
+    .chart-subtitle {
+      font-size: 0.72rem;
+      color: var(--text-3);
+      margin-top: 0.15rem;
+    }
+
+    .chart-tag {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      align-self: flex-start;
+    }
+
+    .chart-tag--email {
+      background: #b8913a18;
+      color: #b8913a;
+    }
+
+    .chart-tag--tasks {
+      background: #3e8c3e18;
+      color: #3e8c3e;
+    }
+
+    .chart-tag--messages {
+      background: #c4526b18;
+      color: #c4526b;
+    }
+
+    .chart-tag--reports {
+      background: #33337718;
+      color: #333377;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 200px;
+    }
+
+    .chart-wrap--donut {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Responsive ──────────────────────────────────── */
+    @media (max-width: 480px) {
+      body {
+        padding: 1.25rem 1rem 3rem;
+      }
+
+      .topbar {
+        margin-bottom: 2rem;
+      }
+
+      .detailed-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    .detailed-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <div class="wrapper">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-logo">WorkStart</div>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <button id="auth-btn" class="topbar-badge"
+          style="cursor: pointer; background: var(--accent); color: white; border: none; font-weight: 600; transition: 0.2s; opacity: 0.6;"
+          disabled>Carregando Google...</button>
+        <div class="topbar-badge" id="current-date">Terça-feira, 13 de Maio de 2025</div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-eyebrow">Bom dia — foco total</div>
+      <h1 class="hero-title" id="hero-title">Por onde começo hoje?</h1>
+      <p class="hero-sub">
+        Aqui está um panorama rápido do seu dia. Confira os itens com mais urgência antes de mergulhar no trabalho.
+      </p>
+    </section>
+
+    <!-- Login State -->
+    <div id="login-state"
+      style="text-align: center; padding: 4rem 1rem; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 3rem;">
+      <h2 style="font-family: 'Syne', sans-serif; font-size: 1.5rem; margin-bottom: 0.75rem;">Acesse seus dados</h2>
+      <p style="color: var(--text-2); margin-bottom: 2rem; font-size: 0.95rem;">Conecte-se com o Google para sincronizar
+        seus emails e reuniões de hoje.</p>
+      <button id="auth-btn-main"
+        style="cursor: pointer; background: var(--text-1); color: white; border: none; font-weight: 600; padding: 0.85rem 1.8rem; border-radius: 99px; font-size: 0.95rem; transition: transform 0.2s, box-shadow 0.2s; opacity: 0.6;"
+        disabled>Carregando Google...</button>
+
+      <div id="file-warning"
+        style="display: none; margin-top: 1.5rem; padding: 1rem; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; font-size: 0.85rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+        ⚠️ <strong>Atenção:</strong> O login do Google não funciona abrindo o arquivo direto.
+        <br>Por favor, use um <strong>servidor local</strong> (ex: Live Server do VS Code).
+      </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard-content" style="display: none;">
+
+      <!-- Summary cards -->
+      <div class="section-label">Resumo do dia</div>
+      <div class="cards" role="list">
+
+        <!-- Emails -->
+        <article class="card card--email" role="listitem" id="card-emails">
+          <div class="card-header">
+            <div class="card-icon" aria-hidden="true">✉️</div>
+            <span class="card-badge">Alta prioridade</span>
+          </div>
+          <div>
+            <div class="card-label">Emails não lidos</div>
+            <div class="card-value" aria-label="14 emails não lidos">14</div>
+            <div class="card-desc">3 requerem resposta imediata · 2 de clientes</div>
+          </div>
+          <div class="card-progress">
+            <div class="progress-track" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-fill"></div>
+            </div>
+            <div class="progress-label">
+              <span>Triados hoje</span>
+              <span>72%</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Reuniões -->
+        <article class="card card--meetings" role="listitem" id="card-meetings">
+          <div class="card-header">
+            <div class="card-icon" aria-hidden="true">📅</div>
+            <span class="card-badge">Agendado</span>
+          </div>
+          <div>
+            <div class="card-label">Reuniões hoje</div>
+            <div class="card-value" aria-label="3 reuniões hoje">3</div>
+            <div class="card-desc">Próxima às 10h · Daily do time · 30 min</div>
+          </div>
+          <div class="card-progress">
+            <div class="progress-track" role="progressbar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-fill"></div>
+            </div>
+            <div class="progress-label">
+              <span>Concluídas</span>
+              <span>1 de 3</span>
+            </div>
+          </div>
+        </article>
+
+      </div><!-- /cards -->
+
+      <div class="section-label">Painel Detalhado</div>
+      <div class="detailed-grid">
+        <!-- Gráfico de Emails -->
+        <div
+          style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;">
+          <h3 style="font-family: 'Syne', sans-serif; font-size: 1rem; margin-bottom: 1rem;">Volume de Emails (Últimos 7
+            dias)</h3>
+          <div style="position: relative; height: 260px;">
+            <canvas id="emailChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Lista de Reuniões -->
+        <div
+          style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; max-height: 335px;">
+          <h3 style="font-family: 'Syne', sans-serif; font-size: 1rem; margin-bottom: 1rem;">Agenda de Hoje</h3>
+          <div id="meetings-list"
+            style="flex: 1; overflow-y: auto; padding-right: 0.5rem; display: flex; flex-direction: column; gap: 0.85rem;">
+            <div style="color: var(--text-3); font-size: 0.85rem; text-align: center; margin-top: 2rem;">
+              Sincronizando...</div>
+          </div>
+        </div>
+
+        <!-- Lista de Emails Prioritários -->
+        <div
+          style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; max-height: 335px;">
+          <h3 style="font-family: 'Syne', sans-serif; font-size: 1rem; margin-bottom: 1rem;">Alertas: Glassdoor/LinkedIn
+          </h3>
+          <div id="priority-list"
+            style="flex: 1; overflow-y: auto; padding-right: 0.5rem; display: flex; flex-direction: column; gap: 0.85rem;">
+            <div style="color: var(--text-3); font-size: 0.85rem; text-align: center; margin-top: 2rem;">
+              Sincronizando...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Quick links -->
+      <div class="section-label">Acesso rápido</div>
+      <nav class="links-grid" aria-label="Acesso rápido">
+        <a href="https://mail.google.com" target="_blank" class="link-item" id="link-email"><span>📧</span> Abrir
+          Gmail</a>
+        <a href="https://calendar.google.com" target="_blank" class="link-item" id="link-calendar"><span>🗓️</span>
+          Google Calendário</a>
+        <a href="https://keep.google.com" target="_blank" class="link-item" id="link-tasks"><span>📝</span> Google
+          Keep</a>
+        <a href="https://drive.google.com" target="_blank" class="link-item" id="link-docs"><span>📁</span> Google
+          Drive</a>
+      </nav>
+    </div><!-- /dashboard-content -->
+
+    <footer class="footer">
+      <p>WorkStart Dashboard &mdash; atualizado em 13 Mai 2025</p>
+    </footer>
+
+  </div><!-- /wrapper -->
+
+  <script>
+    /* ── GOOGLE API INTEGRATION ────────────────── */
+    const CLIENT_ID = '611414495773-7cnpat0h522ug6b0r0e8r9u2ia356fso.apps.googleusercontent.com';
+    const DISCOVERY_DOCS = [
+      'https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest',
+      'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'
+    ];
+    const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/calendar.readonly';
+
+    let tokenClient;
+    let gapiInited = false;
+    let gisInited = false;
+
+    function gapiLoaded() {
+      gapi.load('client', initializeGapiClient);
+    }
+
+    async function initializeGapiClient() {
+      try {
+        await gapi.client.init({
+          discoveryDocs: DISCOVERY_DOCS,
+        });
+        gapiInited = true;
+      } catch (err) {
+        console.error('Erro GAPI:', err);
+        // Marcamos como true para tentar habilitar os botões se GIS funcionar
+        gapiInited = true;
+      }
+      maybeEnableButtons();
+    }
+
+    function gisLoaded() {
+      try {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: '', // definido no clique
+        });
+        gisInited = true;
+      } catch (err) {
+        console.error('Erro GIS:', err);
+        gisInited = true;
+      }
+      maybeEnableButtons();
+    }
+
+    function maybeEnableButtons() {
+      console.log('Status: GAPI:', gapiInited, 'GIS:', gisInited);
+      if (gapiInited && gisInited) {
+        const btn1 = document.getElementById('auth-btn');
+        const btn2 = document.getElementById('auth-btn-main');
+
+        if (btn1) {
+          btn1.innerText = 'Entrar com Google';
+          btn1.style.opacity = '1';
+          btn1.disabled = false;
+        }
+        if (btn2) {
+          btn2.innerText = 'Entrar com Google';
+          btn2.style.opacity = '1';
+          btn2.disabled = false;
+        }
+      }
+    }
+
+    if (window.location.protocol === 'file:') {
+      const warning = document.getElementById('file-warning');
+      if (warning) warning.style.display = 'block';
+      console.warn('Atenção: O login do Google requer um servidor (localhost ou domínio). No protocolo file:// ele pode não funcionar.');
+    }
+
+    const handleAuthClick = function () {
+      tokenClient.callback = async (resp) => {
+        if (resp.error !== undefined) {
+          console.error(resp);
+          return;
+        }
+        document.getElementById('auth-btn').innerText = 'Sincronizado';
+        document.getElementById('auth-btn').style.background = 'var(--accent-2)';
+
+        // Esconde login, mostra dashboard
+        document.getElementById('login-state').style.display = 'none';
+        document.getElementById('dashboard-content').style.display = 'block';
+
+        await fetchGoogleData();
+      };
+
+      if (gapi.client.getToken() === null) {
+        tokenClient.requestAccessToken({ prompt: 'consent' });
+      } else {
+        tokenClient.requestAccessToken({ prompt: '' });
+      }
+    };
+
+    document.getElementById('auth-btn').onclick = handleAuthClick;
+    document.getElementById('auth-btn-main').onclick = handleAuthClick;
+
+    async function fetchGoogleData() {
+      try {
+        // --- 1. Buscar Emails Não Lidos ---
+        const mailResponse = await gapi.client.gmail.users.messages.list({
+          'userId': 'me',
+          'q': 'is:unread in:inbox'
+        });
+
+        const messages = mailResponse.result.messages || [];
+        const unreadCount = mailResponse.result.resultSizeEstimate || messages.length;
+
+        const emailValueEl = document.querySelector('.card--email .card-value');
+        emailValueEl.innerText = unreadCount;
+        emailValueEl.setAttribute('aria-label', `${unreadCount} emails não lidos`);
+        document.querySelector('.card--email .card-desc').innerText = 'Dados reais da sua caixa de entrada';
+
+        const emailProgressLabel = document.querySelector('.card--email .progress-label span:first-child');
+        emailProgressLabel.innerText = 'Sincronizado hoje';
+        document.querySelector('.card--email .progress-fill').style.width = '100%';
+
+        // --- 2. Buscar Reuniões de Hoje ---
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const calendarResponse = await gapi.client.calendar.events.list({
+          'calendarId': 'primary',
+          'timeMin': startOfDay.toISOString(),
+          'timeMax': endOfDay.toISOString(),
+          'showDeleted': false,
+          'singleEvents': true,
+          'orderBy': 'startTime',
+        });
+
+        const events = calendarResponse.result.items || [];
+        const meetingsCount = events.length;
+
+        const meetingsValueEl = document.querySelector('.card--meetings .card-value');
+        meetingsValueEl.innerText = meetingsCount;
+        meetingsValueEl.setAttribute('aria-label', `${meetingsCount} reuniões hoje`);
+
+        if (meetingsCount > 0) {
+          const now = new Date();
+          const upcomingEvents = events.filter(e => new Date(e.start.dateTime || e.start.date) >= now);
+
+          if (upcomingEvents.length > 0) {
+            const nextEvent = upcomingEvents[0];
+            const nextEventTime = new Date(nextEvent.start.dateTime || nextEvent.start.date);
+            const timeString = nextEventTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.querySelector('.card--meetings .card-desc').innerText = `Próxima: ${nextEvent.summary} às ${timeString}`;
+          } else {
+            document.querySelector('.card--meetings .card-desc').innerText = 'Você não tem mais reuniões hoje!';
+          }
+        } else {
+          document.querySelector('.card--meetings .card-desc').innerText = 'Nenhuma reunião agendada para hoje.';
+        }
+
+        const meetingsProgressLabel = document.querySelector('.card--meetings .progress-label span:first-child');
+        meetingsProgressLabel.innerText = 'Sincronizado hoje';
+        document.querySelector('.card--meetings .progress-fill').style.width = '100%';
+
+        // --- 3. Preencher a lista de reuniões (Janela) ---
+        const meetingsListEl = document.getElementById('meetings-list');
+        meetingsListEl.innerHTML = '';
+        if (events.length === 0) {
+          meetingsListEl.innerHTML = '<div style="color: var(--text-3); font-size: 0.85rem; text-align: center; margin-top: 2rem;">Sem eventos para hoje 🎉</div>';
+        } else {
+          events.forEach(ev => {
+            const isAllDay = ev.start.date !== undefined;
+            const startTime = isAllDay ? 'Dia todo' : new Date(ev.start.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const link = ev.htmlLink;
+            meetingsListEl.innerHTML += `
+              <a href="${link}" target="_blank" style="display: flex; flex-direction: column; padding: 0.75rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; transition: border-color 0.2s;">
+                <span style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem;">${ev.summary || 'Evento sem título'}</span>
+                <span style="font-size: 0.75rem; color: var(--accent-2); font-weight: 500;">${startTime}</span>
+              </a>
+            `;
+          });
+        }
+
+        // --- 4. Buscar histórico de emails (7 dias) e renderizar gráfico ---
+        const labels = [];
+        const queriesTotal = [];
+        const queriesVagas = [];
+        const queriesSites = [];
+
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          labels.push(d.toLocaleDateString('pt-BR', { weekday: 'short' }));
+
+          const startStr = d.toISOString().split('T')[0].replace(/-/g, '/');
+          const nextD = new Date(d);
+          nextD.setDate(d.getDate() + 1);
+          const endStr = nextD.toISOString().split('T')[0].replace(/-/g, '/');
+
+          queriesTotal.push(`after:${startStr} before:${endStr}`);
+          queriesVagas.push(`after:${startStr} before:${endStr} (vaga OR oportunidade OR job OR linkedin OR gupy OR recrutamento)`);
+          queriesSites.push(`after:${startStr} before:${endStr} (category:promotions OR category:updates OR unsubscribe)`);
+        }
+
+        const fetchCount = async (q) => {
+          try {
+            const res = await gapi.client.gmail.users.messages.list({ userId: 'me', q: q, maxResults: 1 });
+            return res.result.resultSizeEstimate || (res.result.messages ? res.result.messages.length : 0);
+          } catch (e) { return 0; }
+        };
+
+        const dataTotal = [];
+        const dataVagas = [];
+        const dataSites = [];
+
+        // Buscar dados sequencialmente para evitar erro 429 (Too Many Requests)
+        for (let i = 0; i < 7; i++) {
+          dataTotal.push(await fetchCount(queriesTotal[i]));
+          dataVagas.push(await fetchCount(queriesVagas[i]));
+          dataSites.push(await fetchCount(queriesSites[i]));
+        }
+
+        // --- 5. Buscar Emails Prioritários (Glassdoor/LinkedIn) ---
+        const priorityListEl = document.getElementById('priority-list');
+        priorityListEl.innerHTML = '';
+        try {
+          const priorityQuery = 'is:unread (from:linkedin.com OR from:glassdoor.com OR subject:glassdoor OR subject:linkedin)';
+          const priorityRes = await gapi.client.gmail.users.messages.list({ userId: 'me', q: priorityQuery, maxResults: 5 });
+          const pMessages = priorityRes.result.messages || [];
+
+          if (pMessages.length === 0) {
+            priorityListEl.innerHTML = '<div style="color: var(--text-3); font-size: 0.85rem; text-align: center; margin-top: 2rem;">Nenhum email prioritário.</div>';
+          } else {
+            for (let msgInfo of pMessages) {
+              const msg = await gapi.client.gmail.users.messages.get({ userId: 'me', id: msgInfo.id, format: 'metadata', metadataHeaders: ['Subject', 'From'] });
+              const headers = msg.result.payload.headers;
+              const subject = headers.find(h => h.name === 'Subject')?.value || 'Sem assunto';
+              const fromStr = headers.find(h => h.name === 'From')?.value || 'Desconhecido';
+              const from = fromStr.split('<')[0].trim();
+
+              priorityListEl.innerHTML += `
+                <a href="https://mail.google.com/mail/u/0/#inbox/${msgInfo.id}" target="_blank" style="display: flex; flex-direction: column; padding: 0.75rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: inherit; transition: border-color 0.2s;">
+                  <span style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${subject}</span>
+                  <span style="font-size: 0.75rem; color: var(--accent-3); font-weight: 500;">De: ${from}</span>
+                </a>
+              `;
+            }
+          }
+        } catch (err) {
+          priorityListEl.innerHTML = '<div style="color: red; font-size: 0.85rem; text-align: center;">Erro ao carregar.</div>';
+        }
+
+        const ctx = document.getElementById('emailChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Vagas/Oportunidades',
+                data: dataVagas,
+                backgroundColor: '#3e8c3e',
+                borderRadius: 4,
+              },
+              {
+                label: 'Sites/Promoções/Updates',
+                data: dataSites,
+                backgroundColor: '#c4526b',
+                borderRadius: 4,
+              },
+              {
+                label: 'Outros (Geral)',
+                data: dataTotal.map((t, i) => Math.max(0, t - dataVagas[i] - dataSites[i])),
+                backgroundColor: '#b8913a80',
+                borderRadius: 4,
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
+            scales: {
+              x: { stacked: true, grid: { display: false } },
+              y: { stacked: true, beginAtZero: true, grid: { color: '#00000008' }, border: { display: false } }
+            },
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: { font: { family: "'Inter', sans-serif", size: 11 }, usePointStyle: true }
+              },
+              tooltip: {
+                backgroundColor: '#111111',
+                titleFont: { family: "'Inter', sans-serif" },
+                bodyFont: { family: "'Inter', sans-serif" },
+                padding: 10,
+                cornerRadius: 8
+              }
+            }
+          }
+        });
+
+      } catch (err) {
+        console.error('Erro ao buscar dados do Google', err);
+        alert('Ocorreu um erro ao buscar os dados. Verifique o console.');
+      }
+    }
+
+    // Atualizar data atual
+    const today = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('current-date').innerText = today.toLocaleDateString('pt-BR', options).replace('-feira', '-feira,');
+
+  </script>
+
+  <!-- Google API Scripts movidos para o final para garantir que as funções de callback existam -->
+  <script src="https://accounts.google.com/gsi/client" onload="gisLoaded()" async defer></script>
+  <script src="https://apis.google.com/js/api.js" onload="gapiLoaded()" async defer></script>
+</body>
+
+</html>
