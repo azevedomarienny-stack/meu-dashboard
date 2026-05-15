@@ -14,6 +14,7 @@ O projeto foi criado com o objetivo de centralizar informações importantes em 
 - Links rápidos para ferramentas Google
 - Interface responsiva e moderna
 - Atualização dinâmica de dados em tempo real
+  
 ## Tecnologias utilizadas
 - HTML5
 - CSS3
