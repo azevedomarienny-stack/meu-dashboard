@@ -13,7 +13,7 @@
     rel="stylesheet" />
 
   <style>
-   /**/
+    /* ── Reset & tokens ──────────────────────────────── */
     *,
     *::before,
     *::after {
@@ -484,6 +484,176 @@
       gap: 1.25rem;
       margin-bottom: 3rem;
     }
+
+    /* ── Kanban Section ──────────────────────────────── */
+    .kanban-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+
+    .kanban-col {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-height: 300px;
+    }
+
+    .kanban-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .kanban-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-2);
+    }
+
+    .kanban-count {
+      font-size: 0.7rem;
+      background: var(--surface-2);
+      padding: 0.2rem 0.5rem;
+      border-radius: 99px;
+      color: var(--text-3);
+    }
+
+    .kanban-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .kanban-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.85rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      color: var(--text-2);
+      cursor: grab;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .kanban-item:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .kanban-item button {
+      background: none;
+      border: none;
+      color: var(--text-3);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      opacity: 0.3;
+      transition: opacity 0.2s;
+    }
+
+    .kanban-item:hover button {
+      opacity: 1;
+    }
+
+    .kanban-add {
+      background: none;
+      border: 1px dashed var(--border);
+      padding: 0.75rem;
+      border-radius: 10px;
+      color: var(--text-3);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .kanban-add:hover {
+      background: var(--surface-2);
+      color: var(--text-1);
+      border-style: solid;
+    }
+
+    /* ── Hero doll ───────────────────────────────────── */
+    .hero-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .hero-doll {
+      width: 120px;
+      height: 120px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .hero-doll img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @media (max-width: 768px) {
+      .hero-flex {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+      }
+
+      .hero-doll {
+        width: 80px;
+        height: 80px;
+      }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
@@ -504,11 +674,18 @@
 
     <!-- Hero -->
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-eyebrow">Bom dia — foco total</div>
-      <h1 class="hero-title" id="hero-title">Por onde começo hoje?</h1>
-      <p class="hero-sub">
-        Aqui está um panorama rápido do seu dia. Confira os itens com mais urgência antes de mergulhar no trabalho.
-      </p>
+      <div class="hero-flex">
+        <div>
+          <div class="hero-eyebrow">Bom dia — foco total</div>
+          <h1 class="hero-title" id="hero-title">Por onde começo hoje?</h1>
+          <p class="hero-sub">
+            Aqui está um panorama rápido do seu dia. Confira os itens com mais urgência antes de mergulhar no trabalho.
+          </p>
+        </div>
+        <div class="hero-doll" title="Olá! Pronto para começar? 😉">
+          <img src="winking_doll.png" alt="Ilustração de uma boneca com cabelo black power piscando">
+        </div>
+      </div>
     </section>
 
     <!-- Login State -->
@@ -580,6 +757,63 @@
         </article>
 
       </div><!-- /cards -->
+
+      <!-- Kanban Section -->
+      <div class="section-label">Priorização e Planejamento</div>
+      <div class="kanban-grid">
+        <!-- Kanban: A Fazer -->
+        <div class="kanban-col" id="col-todo">
+          <div class="kanban-header">
+            <span class="kanban-title">A Fazer</span>
+            <span class="kanban-count" id="count-todo">0</span>
+          </div>
+          <div class="progress-track" style="margin: 0.5rem 0 1rem 0; height: 4px;">
+            <div class="progress-fill" id="progress-fill-todo" style="width: 0%; background: var(--accent);"></div>
+          </div>
+          <div class="kanban-list" id="list-todo"></div>
+          <button class="kanban-add" onclick="addTask('todo')"><span>+</span> Nova atividade</button>
+        </div>
+
+        <!-- Kanban: Em Progresso -->
+        <div class="kanban-col" id="col-progress">
+          <div class="kanban-header">
+            <span class="kanban-title">Em Progresso</span>
+            <span class="kanban-count" id="count-progress">0</span>
+          </div>
+          <div class="progress-track" style="margin: 0.5rem 0 1rem 0; height: 4px;">
+            <div class="progress-fill" id="progress-fill-progress" style="width: 0%; background: var(--accent-2);">
+            </div>
+          </div>
+          <div class="kanban-list" id="list-progress"></div>
+          <button class="kanban-add" onclick="addTask('progress')"><span>+</span> Nova atividade</button>
+        </div>
+
+        <!-- Kanban: Concluído -->
+        <div class="kanban-col" id="col-done">
+          <div class="kanban-header">
+            <span class="kanban-title">Concluído</span>
+            <span class="kanban-count" id="count-done">0</span>
+          </div>
+          <div class="progress-track" style="margin: 0.5rem 0 1rem 0; height: 4px;">
+            <div class="progress-fill" id="progress-fill-done" style="width: 0%; background: var(--accent-3);"></div>
+          </div>
+          <div class="kanban-list" id="list-done"></div>
+          <button class="kanban-add" onclick="addTask('done')"><span>+</span> Nova atividade</button>
+        </div>
+
+        <!-- Futuro Distante -->
+        <div class="kanban-col" id="col-future" style="border-style: dashed; border-color: var(--accent);">
+          <div class="kanban-header">
+            <span class="kanban-title" style="color: var(--accent);">Futuro Distante</span>
+            <span class="kanban-count" id="count-future">0</span>
+          </div>
+          <div class="progress-track" style="margin: 0.5rem 0 1rem 0; height: 4px;">
+            <div class="progress-fill" id="progress-fill-future" style="width: 0%; background: var(--accent);"></div>
+          </div>
+          <div class="kanban-list" id="list-future"></div>
+          <button class="kanban-add" onclick="addTask('future')"><span>+</span> Novo plano</button>
+        </div>
+      </div>
 
       <div class="section-label">Painel Detalhado</div>
       <div class="detailed-grid">
@@ -949,6 +1183,59 @@
     const today = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     document.getElementById('current-date').innerText = today.toLocaleDateString('pt-BR', options).replace('-feira', '-feira,');
+
+    /* ── KANBAN INTERACTIVITY ────────────────── */
+    const kanbanData = JSON.parse(localStorage.getItem('kanbanTasks')) || {
+      todo: ['Revisar documentos', 'Organizar workspace'],
+      progress: ['Configurar API do Google'],
+      done: ['Criar conta no Cloud'],
+      future: ['Viagem para Paris', 'Aprender Rust']
+    };
+
+    function renderKanban() {
+      const totalTasks = Object.values(kanbanData).reduce((sum, arr) => sum + arr.length, 0);
+
+      Object.keys(kanbanData).forEach(colId => {
+        const listEl = document.getElementById(`list-${colId}`);
+        const countEl = document.getElementById(`count-${colId}`);
+        const fillEl = document.getElementById(`progress-fill-${colId}`);
+        if (!listEl) return;
+
+        listEl.innerHTML = '';
+        kanbanData[colId].forEach((task, index) => {
+          const item = document.createElement('div');
+          item.className = 'kanban-item';
+          item.innerHTML = `
+            <span>${task}</span>
+            <button onclick="removeTask('${colId}', ${index})" title="Remover">×</button>
+          `;
+          listEl.appendChild(item);
+        });
+        countEl.innerText = kanbanData[colId].length;
+
+        // Atualizar barra de progresso individual (porcentagem da coluna em relação ao total)
+        if (fillEl) {
+          const percentage = totalTasks > 0 ? (kanbanData[colId].length / totalTasks) * 100 : 0;
+          fillEl.style.width = percentage + '%';
+        }
+      });
+      localStorage.setItem('kanbanTasks', JSON.stringify(kanbanData));
+    }
+
+    window.addTask = function (colId) {
+      const task = prompt('O que você deseja adicionar?');
+      if (task && task.trim()) {
+        kanbanData[colId].push(task.trim());
+        renderKanban();
+      }
+    };
+
+    window.removeTask = function (colId, index) {
+      kanbanData[colId].splice(index, 1);
+      renderKanban();
+    };
+
+    renderKanban();
 
   </script>
 
