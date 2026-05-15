@@ -46,7 +46,7 @@ Client ID
 APIs habilitadas
 # Como executar o projeto
 Clone o repositório:
-git clone https://github.com/SEU-USUARIO/workstart-dashboard.git
+ggit clone https://github.com/azevedomarienny-stack/dashboard-ia.git
 Abra o projeto no VS Code
 Execute utilizando uma extensão como:
 Live Server
